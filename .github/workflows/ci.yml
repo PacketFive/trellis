@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: GPL-2.0
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: Quality gates (Python ${{ matrix.python }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      # The tests compare the built-in solver with PicoSAT, built from the
+      # copy in the pycosat 0.6.6 source release.
+      - name: Build PicoSAT
+        run: |
+          pip download --no-deps --no-binary :all: pycosat==0.6.6 -d "$RUNNER_TEMP"
+          cd "$RUNNER_TEMP"
+          echo "a376cfae20b16fcfbef24bf3c047a8a294c35032bb051fa98842c12bbab6f0ff  pycosat-0.6.6.tar.gz" | sha256sum -c
+          tar xzf pycosat-0.6.6.tar.gz
+          gcc -O2 -shared -fPIC -DNDEBUG -o libpicosat.so pycosat-0.6.6/picosat.c
+          echo "TRELLIS_PICOSAT=$RUNNER_TEMP/libpicosat.so" >> "$GITHUB_ENV"
+
+      - name: Install the project and its dev group
+        run: |
+          python -m pip install --upgrade "pip>=25.1"
+          pip install --group dev
+          pip install --config-settings editable_mode=strict -e .
+
+      # The github format turns findings into annotations on the changed lines.
+      - name: Run the quality gates
+        run: pybootstrap check --junit-dir .quality --format github
+
+      - name: Keep the gate results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-${{ matrix.python }}
+          path: .quality/junit-*.xml

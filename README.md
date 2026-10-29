@@ -22,7 +22,7 @@ read.
 
 ## Status
 
-Alpha. Two solver backends give the same results:
+Stable since 1.0.0. Two solver backends give the same results:
 
 | Backend | Solver | Needs |
 | --- | --- | --- |
@@ -36,26 +36,35 @@ coverage floor is 80%.
 
 ## Install
 
-Trellis is not on PyPI yet; it will be published as `trellis-kconfig`,
-since the name `trellis` is taken. The import name is `trellis`. To use
-it in another project, install it from its repository:
+Trellis is published on PyPI as `trellis-kconfig`, since the name
+`trellis` is taken. The import name and the command are `trellis`. To use
+it in another project:
 
 ```sh
-pip install git+https://github.com/PacketFive/trellis.git
+pip install trellis-kconfig
 ```
+
+or add `trellis-kconfig>=1.0,<2` to the project's dependencies.
 
 To work on Trellis itself:
 
 ```sh
-pip install --config-settings editable_mode=strict -e '.[dev]'
+python -m pip install --upgrade "pip>=25.1"
+pip install --group dev
+pip install --config-settings editable_mode=strict -e .
 pybootstrap check
 ```
 
 Python 3.12 or later is required. The only runtime dependency is
-Pydantic 2. The `dev` extra installs
+Pydantic 2. The `dev` dependency group installs
 [pybootstrap](https://github.com/packetfive/pybootstrap) and the tools its
 gates drive: ruff, pyright, and pytest with coverage. The PicoSAT tests
 are skipped when the library cannot be loaded.
+
+Releases are made by pushing a tag `vX.Y.Z` that matches `__version__`
+and has a section in `CHANGELOG.md`. The release workflow runs the gates,
+builds the package, publishes it to PyPI through trusted publishing with
+attestations, and creates the GitHub release.
 
 ## An example
 
@@ -278,4 +287,4 @@ lets the wanted value hold.
 
 ## License
 
-GPL-2.0-only.
+GPL-2.0-only. See [LICENSE](LICENSE).
