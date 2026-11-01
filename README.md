@@ -56,7 +56,9 @@ pybootstrap check
 ```
 
 Python 3.12 or later is required. The only runtime dependency is
-Pydantic 2. The `dev` dependency group installs
+[Espalier](https://github.com/PacketFive/espalier) (`pyrixos-espalier`),
+a pure-Python subset of the pydantic 2 API, so Trellis installs no
+compiled code. The `dev` dependency group installs
 [pybootstrap](https://github.com/packetfive/pybootstrap) and the tools its
 gates drive: ruff, pyright, and pytest with coverage. The PicoSAT tests
 are skipped when the library cannot be loaded.

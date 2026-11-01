@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from pydantic import BaseModel, ConfigDict
+from espalier import BaseModel, ConfigDict
 
 TRUE = 1
 FALSE = -1

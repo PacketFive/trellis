@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Mapping
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from espalier import BaseModel, ConfigDict, Field
 
 TRISTATE = {"n": 0, "m": 1, "y": 2}
 VALUE_OF = ("n", "m", "y")
